@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Event {
+  id Int @id @default(autoincrement())
+  name String
+  startDate DateTime
+  endDate DateTime
+  troop Troop @relation(fields: [troopId], references: [id])
+  troopId Int @unique
+  tasks TaskTemplate[]
+}
+
+model Troop {
+  id Int @id @default(autoincrement())
+  name String
+  patrols Patrol[]
+  leader User @relation(name: "leaderOfTroop", fields: [leaderId], references: [id])
+  leaderId Int @unique
+  assistants User[] @relation(name: "assistantOfTroop")
+  event Event?
+}
+
+model Patrol {
+  id Int @id @default(autoincrement())
+  name String
+  members User[] @relation(name: "membersOfPatrol")
+  troop Troop @relation(fields: [troopId], references: [id])
+  troopId Int
+  leader User @relation(name: "leaderOfPatrol", fields: [leaderId], references: [id])
+  leaderId Int @unique
+  tasksScores PatrolTaskScore[]
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  firstName String
+  lastName String
+  passwordHash String
+  patrol Patrol? @relation(name: "membersOfPatrol", fields: [patrolId], references: [id])
+  patrolId Int?
+  leaderOfPatrol Patrol? @relation(name: "leaderOfPatrol")
+  leaderOfTroop Troop? @relation(name: "leaderOfTroop")
+  assistantOfTroop Troop? @relation(name: "assistantOfTroop", fields: [assistantOfTroopId], references: [id])
+  assistantOfTroopId Int?
+  taskScores UserTaskScore[]
+}
+
+model TaskTemplate {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  maxPoints Int
+  repeating Boolean
+  individualTask Boolean
+  event Event @relation(fields: [eventId], references: [id])
+  eventId Int
+  tasks Task[]
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+  date DateTime
+  taskTemplate TaskTemplate @relation(fields: [taskTemplateId], references: [id])
+  taskTemplateId Int
+  userTaskScore UserTaskScore[]
+  patrolTaskScore PatrolTaskScore[]
+}
+
+model UserTaskScore {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  score Int @default(0)
+  task Task @relation(fields: [taskId], references: [id])
+  taskId Int
+}
+
+model PatrolTaskScore {
+  id Int @id @default(autoincrement())
+  patrol Patrol @relation(fields: [patrolId], references: [id])
+  patrolId Int
+  score Int @default(0)
+  task Task @relation(fields: [taskId], references: [id])
+  taskId Int
+}
