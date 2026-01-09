@@ -1,6 +1,14 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import postRegister from './routes/api/v1/register'
+import postLogin from './routes/api/v1/login';
+import getVerifySecretCode from './routes/api/v1/verifySecretCode';
+import getUserInfo from './routes/api/v1/userInfo';
+import getPatrolInfo from './routes/api/v1/patrolInfo';
+import getTroopInfo from './routes/api/v1/troopInfo';
+import getEventInfo from './routes/api/v1/eventInfo';
+import postResetPassword from './routes/api/v1/resetPassword';
+import cors from 'cors'
 
 const PORT = 3000;
 const app = express();
@@ -9,17 +17,14 @@ dotenv.config();
 
 app.use(express.json());
 
-postRegister(app)
-
-/*
-- register (email/username, password, secretCode)
-- login (email/username, password)
-- resetPassword (targetUser, username, sessionSecret)
-- fetchUserData (targetUser, username, sessionSecret)
-...
-- updateUserData (targetUser, data, timestamp, username, sessionSecret)
-- updateGroupData (targetGroup, data, timestamp, username, sessionSecret)
-*/
+getVerifySecretCode(app);
+postRegister(app);
+postLogin(app);
+postResetPassword(app);
+getUserInfo(app);
+getPatrolInfo(app);
+getTroopInfo(app);
+getEventInfo(app);
 
 app.listen(PORT, () => {
   console.log(`Scout Rank backend listening on ${PORT}`);

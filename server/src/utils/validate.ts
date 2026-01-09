@@ -1,10 +1,26 @@
-type checkResult = {
+type validateResult = {
     correct: boolean,
     statusCode: number,
     message: string
 }
 
-function nameCheck(name: any, allowDigits: boolean = false, allowSpaces: boolean = false) : checkResult {
+function validatePayload(payload: any) : validateResult {
+    if (typeof payload != typeof {}) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Invalid request!"
+        }
+    }
+
+    return {
+        correct: true,
+        statusCode: 200,
+        message: "OK"
+    }
+}
+
+function validateName(name: any, allowDigits: boolean = false, allowSpaces: boolean = false) : validateResult {
     if (typeof name !== typeof "") {
         return {
             correct: false,
@@ -53,7 +69,7 @@ function nameCheck(name: any, allowDigits: boolean = false, allowSpaces: boolean
     }
 }
 
-function passwordCheck(password: any) : checkResult {
+function validatePassword(password: any) : validateResult {
     if (typeof password !== typeof "") {
         return {
             correct: false,
@@ -93,12 +109,63 @@ function passwordCheck(password: any) : checkResult {
     }
 }
 
-function dateCheck(date: any) {
+function parseAndValidateDate(date_str: any) : { date: Date, result: validateResult } {
+    const date = new Date(Date.parse(date_str))
+
+    if (!date) {
+        return {
+            date: date,
+            result: {
+                correct: false,
+                statusCode: 400,
+                message: "Given date must be date type!"
+            }
+        }
+    }
+
     if (typeof date !== typeof (new Date)) {
+         return {
+            date: date,
+            result: {
+                correct: false,
+                statusCode: 400,
+                message: "Given date must be date type!"
+            }
+        }
+    }
+
+    return {
+        date: date,
+        result: {
+            correct: true,
+            statusCode: 200,
+            message: "OK"
+        }
+    }
+}
+
+function validateId(id: any) : validateResult {
+    if (typeof id !== typeof 1) {
         return {
             correct: false,
             statusCode: 400,
-            message: "Given date must be date type!"
+            message: "Given id must be number type!"
+        }
+    }
+
+    if (!Number.isInteger(id)) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given id must be integer!"
+        }
+    }
+
+    if (id < 0) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given id must non-negative!"
         }
     }
 
@@ -110,4 +177,4 @@ function dateCheck(date: any) {
 }
 
 
-export { nameCheck, passwordCheck, dateCheck }
+export { validatePayload, validateName, validatePassword, parseAndValidateDate, validateId }

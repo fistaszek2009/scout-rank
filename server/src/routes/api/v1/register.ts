@@ -1,16 +1,23 @@
 import express from 'express'
-import { nameCheck, passwordCheck, dateCheck } from '../../../utils/checks'
-import { hashPassword, checkPassword } from '../../../utils/password'
+import { validateName, validatePassword, parseAndValidateDate, validatePayload } from '../../../utils/validate'
+import { hashPassword } from '../../../utils/password'
 import { prisma } from '../../../lib/prisma'
 
 
 export default function postRegister(app: express.Application) {
-    app.post('/register', async (req, res) => {
+    app.post('/api/v1/register', async (req, res) => {
         const payload = req.body;
+        const payloadValidationRes = validatePayload(payload);
+        if (!payloadValidationRes.correct) {
+            res.status(payloadValidationRes.statusCode).send('payload: ' + payloadValidationRes.message);
+            return;
+        }
+
         const secretCode = payload.secretCode;
 
         if (secretCode !== process.env.SECRET_CODE) {
-            res.status(401).send("Invalid secret code!");
+            res.status(401).send('Invalid secret code!');
+            return;
         }
 
         const firstName = payload.firstName;
@@ -19,79 +26,78 @@ export default function postRegister(app: express.Application) {
         const password = payload.password;
         const confirmPassword = payload.confirmPassword;
 
-        const firstNameCheckRes = nameCheck(firstName);
-        if (!firstNameCheckRes.correct) {
-            res.status(firstNameCheckRes.statusCode).send(firstNameCheckRes.message);
+        const firstNameValidationRes = validateName(firstName);
+        if (!firstNameValidationRes.correct) {
+            res.status(firstNameValidationRes.statusCode).send('firstName: ' + firstNameValidationRes.message);
             return;
         }
 
-        const lastNameCheckRes = nameCheck(lastName);
-        if (!lastNameCheckRes.correct) {
-            res.status(lastNameCheckRes.statusCode).send(lastNameCheckRes.message);
+        const lastNameValidationRes = validateName(lastName);
+        if (!lastNameValidationRes.correct) {
+            res.status(lastNameValidationRes.statusCode).send('lastName: ' + lastNameValidationRes.message);
             return;
         }
 
-        const passwordCheckRes = passwordCheck(password);
-        if (!passwordCheckRes.correct) {
-            res.status(passwordCheckRes.statusCode).send(passwordCheckRes.message);
+        const passwordValidationRes = validatePassword(password);
+        if (!passwordValidationRes.correct) {
+            res.status(passwordValidationRes.statusCode).send('password:' + passwordValidationRes.message);
             return;
         }
         
         if (password !== confirmPassword) {
-            res.status(400).send("Given passwords must be the same!");
+            res.status(400).send('confirmPassword: Given passwords must be the same!');
             return;
         }
 
         const troopName = payload.troopName;
         const eventName = payload.eventName;
-        const eventStartDate = payload.eventStartDate;
-        const eventEndDate = payload.eventEndDate;
+        const eventStartDateStr = payload.eventStartDate;
+        const eventEndDateStr = payload.eventEndDate;
 
-        const troopNameCheckRes = nameCheck(troopName, true, true);
-        if (!troopNameCheckRes.correct) {
-            res.status(troopNameCheckRes.statusCode).send(troopNameCheckRes.message);
+        const troopNameValidationRes = validateName(troopName, true, true);
+        if (!troopNameValidationRes.correct) {
+            res.status(troopNameValidationRes.statusCode).send('troopName: ' + troopNameValidationRes.message);
             return;
         }
 
-        const eventNameCheckRes = nameCheck(eventName, true, true);
-        if (!eventNameCheckRes.correct) {
-            res.status(eventNameCheckRes.statusCode).send(eventNameCheckRes.message);
+        const eventNameValidationRes = validateName(eventName, true, true);
+        if (!eventNameValidationRes.correct) {
+            res.status(eventNameValidationRes.statusCode).send('eventName' + eventNameValidationRes.message);
             return;
         }
 
-        const eventStartDateCheckRes = dateCheck(eventStartDate)
-        if (!eventStartDateCheckRes.correct) {
-            res.status(eventStartDateCheckRes.statusCode).send(eventStartDateCheckRes.message);
+        const { date: eventStartDate, result: eventStartDateValidationRes } = parseAndValidateDate(eventStartDateStr);
+        if (!eventStartDateValidationRes.correct) {
+            res.status(eventStartDateValidationRes.statusCode).send('eventStartDate: ' + eventStartDateValidationRes.message);
             return;
         }
 
-        const eventEndDateCheckRes = dateCheck(eventEndDate)
-        if (!eventEndDateCheckRes.correct) {
-            res.status(eventEndDateCheckRes.statusCode).send(eventEndDateCheckRes.message);
+        const { date: eventEndDate, result: eventEndDateValidationRes } = parseAndValidateDate(eventEndDateStr);
+        if (!eventEndDateValidationRes.correct) {
+            res.status(eventEndDateValidationRes.statusCode).send('eventEndDate: ' + eventEndDateValidationRes.message);
             return;
         }
         
         if (eventEndDate < eventStartDate) {
-            res.status(400).send("End date cannot be later than start date!");
+            res.status(400).send('eventEndDate: Start date cannot be later than end date!');
             return;
         }
 
-        const passwordHash = hashPassword(password)
+        const passwordHash = hashPassword(password);
 
-        const troopLeader = await prisma.user.create({
+        let troopLeader = await prisma.user.create({
             data: {
                 firstName,
                 lastName,
                 passwordHash
             }
-        })
+        });
 
         const troop = await prisma.troop.create({
             data: {
-                name: troopName,
-                leaderId: troopLeader.id
+                name: troopName
             }
-        })
+        });
 
         const event = await prisma.event.create({
             data: {
@@ -100,9 +106,11 @@ export default function postRegister(app: express.Application) {
                 endDate: eventEndDate,
                 troopId: troop.id
             }
-        })
+        });
 
-        res.sendStatus(200);
+        troopLeader = await prisma.user.update({ where: { id: troopLeader.id }, data: { eventId: event.id, leaderOfTroopId: troop.id } });
+
+        res.status(201).json({ eventId: event.id });
     });
 
     return app;
