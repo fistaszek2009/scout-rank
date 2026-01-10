@@ -9,8 +9,10 @@ import getTroopInfo from './routes/api/v1/troopInfo';
 import getEventInfo from './routes/api/v1/eventInfo';
 import postResetPassword from './routes/api/v1/resetPassword';
 import cors from 'cors'
+import postCreateUser from './routes/api/v1/createUser';
+import postCreatePatrol from './routes/api/v1/createPatrol';
 
-const PORT = 3000;
+const PORT = process.env.PORT ?? 3000;
 const app = express();
 
 dotenv.config();
@@ -25,6 +27,8 @@ getUserInfo(app);
 getPatrolInfo(app);
 getTroopInfo(app);
 getEventInfo(app);
+postCreateUser(app);
+postCreatePatrol(app);
 
 app.listen(PORT, () => {
   console.log(`Scout Rank backend listening on ${PORT}`);

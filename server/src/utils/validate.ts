@@ -176,5 +176,21 @@ function validateId(id: any) : validateResult {
     }
 }
 
+function validateBoolean(bool: any) : validateResult {
+    if (typeof bool !== typeof true) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given value must be boolean type!"
+        }
+    }
 
-export { validatePayload, validateName, validatePassword, parseAndValidateDate, validateId }
+    return {
+        correct: true,
+        statusCode: 200,
+        message: "OK"
+    }
+}
+
+
+export { validatePayload, validateName, validatePassword, parseAndValidateDate, validateId, validateBoolean }

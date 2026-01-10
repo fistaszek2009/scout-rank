@@ -62,8 +62,8 @@ export default function postResetPassword(app: express.Application) {
                 return;
             }
 
-            const newPassword = crypto.randomBytes(32).toString("hex");
-            const updateTarget = prisma.user.update({ where: { id: target.id }, data: { passwordHash: hashPassword(newPassword) } });
+            const newPassword = crypto.randomBytes(8).toString("hex");
+            const updateTarget = await prisma.user.update({ where: { id: target.id }, data: { passwordHash: hashPassword(newPassword) } });
             
             res.status(200).json({ newPassword: newPassword });
             return;
@@ -79,8 +79,8 @@ export default function postResetPassword(app: express.Application) {
             return;
         }
 
-        const newPassword = crypto.randomBytes(32).toString("hex");
-        const updateTarget = prisma.user.update({ where: { id: target.id }, data: { passwordHash: hashPassword(newPassword) } });
+        const newPassword = crypto.randomBytes(8).toString("hex");
+        const updateTarget = await prisma.user.update({ where: { id: target.id }, data: { passwordHash: hashPassword(newPassword) } });
 
         res.status(200).json({ newPassword: newPassword });
     });
