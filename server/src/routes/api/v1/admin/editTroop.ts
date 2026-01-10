@@ -1,10 +1,10 @@
 import express from 'express'
-import { checkSession } from '../../../utils/session'
-import { prisma } from '../../../lib/prisma'
-import { validatePayload, validateName, validateId, parseAndValidateDate } from '../../../utils/validate';
+import { checkSession } from '../../../../utils/session'
+import { prisma } from '../../../../lib/prisma'
+import { validatePayload, validateName, validateId } from '../../../../utils/validate';
 
-export default function postEditEvent(app: express.Application) {
-    app.post('/api/v1/editEvent/:targetId', async (req, res) => {
+export default function postEditTroop(app: express.Application) {
+    app.post('/api/v1/admin/editTroop/:targetId', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {
@@ -14,8 +14,6 @@ export default function postEditEvent(app: express.Application) {
 
         const targetId = Number(req.params.targetId);
         const name = payload.name;
-        const startDateStr = payload.startDate;
-        const endDateStr = payload.endDate;
         const userId = payload.userId;
         const sessionSecret = payload.sessionSecret;
 
@@ -53,42 +51,23 @@ export default function postEditEvent(app: express.Application) {
             return;
         }
 
-        const { date: startDate, result: startDateValidationRes } = parseAndValidateDate(startDateStr);
-        if (!startDateValidationRes.correct) {
-            res.status(startDateValidationRes.statusCode).send('startDate: ' + startDateValidationRes.message);
-            return;
-        }
-
-        const { date: endDate, result: endDateValidationRes } = parseAndValidateDate(endDateStr);
-        if (!endDateValidationRes.correct) {
-            res.status(endDateValidationRes.statusCode).send('endDate: ' + endDateValidationRes.message);
-            return;
-        }
-
-        if (endDate < startDate) {
-            res.status(400).send('eventEndDate: Start date cannot be later than end date!');
-            return;
-        }
-
-        const target = await prisma.event.findUnique({ where: { id: targetId } });
+        const target = await prisma.troop.findUnique({ where: { id: targetId }, include: { event: true } });
         if (!target) {
             res.sendStatus(401);
             return;
         }
 
-        if (target.id !== user.eventId) {
+        if (target.event?.id !== user.eventId) {
             res.sendStatus(403);
             return;
         }
 
-        const updatedTarget = await prisma.event.update({
+        const updatedTarget = await prisma.troop.update({
             where: {
                 id: target.id
             },
             data: {
-                name: name,
-                startDate: startDate,
-                endDate: endDate
+                name: name
             }
         });
 

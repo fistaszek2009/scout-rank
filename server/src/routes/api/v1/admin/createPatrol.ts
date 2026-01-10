@@ -1,10 +1,10 @@
 import express from 'express'
-import { checkSession } from '../../../utils/session'
-import { prisma } from '../../../lib/prisma'
-import { validatePayload, validateName, validateId } from '../../../utils/validate';
+import { checkSession } from '../../../../utils/session'
+import { prisma } from '../../../../lib/prisma'
+import { validatePayload, validateName, validateId } from '../../../../utils/validate';
 
-export default function postEditTroop(app: express.Application) {
-    app.post('/api/v1/editTroop/:targetId', async (req, res) => {
+export default function postCreatePatrol(app: express.Application) {
+    app.post('/api/v1/admin/createPatrol', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {
@@ -12,7 +12,6 @@ export default function postEditTroop(app: express.Application) {
             return;
         }
 
-        const targetId = Number(req.params.targetId);
         const name = payload.name;
         const userId = payload.userId;
         const sessionSecret = payload.sessionSecret;
@@ -39,39 +38,32 @@ export default function postEditTroop(app: express.Application) {
             return;
         }
 
-        const targetIdValidationRes = validateId(targetId);
-        if (!targetIdValidationRes.correct) {
-            res.status(targetIdValidationRes.statusCode).send('targetId: ' + targetIdValidationRes.message);
-            return;
-        }
-
         const nameValidationRes = validateName(name, true, true);
         if (!nameValidationRes.correct) {
             res.status(nameValidationRes.statusCode).send('name: ' + nameValidationRes.message);
             return;
         }
 
-        const target = await prisma.troop.findUnique({ where: { id: targetId }, include: { event: true } });
-        if (!target) {
-            res.sendStatus(401);
-            return;
-        }
-
-        if (target.event?.id !== user.eventId) {
-            res.sendStatus(403);
-            return;
-        }
-
-        const updatedTarget = await prisma.troop.update({
+        const target = await prisma.patrol.findFirst({
             where: {
-                id: target.id
-            },
-            data: {
-                name: name
+                name: name,
+                troopId: user.event?.troop.id
             }
         });
 
-        res.sendStatus(200);
+        if (target) {
+            res.status(400).send('name: Patrol with such name already exists!');
+            return;
+        }
+        
+        const newPatrol = await prisma.patrol.create({
+            data: {
+                name: name,
+                troopId: user.event?.troop.id!
+            }
+        });
+
+        res.status(201).json({ id: newPatrol.id });
     });
 
     return app;

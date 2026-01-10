@@ -1,12 +1,10 @@
 import express from 'express'
-import { checkSession } from '../../../utils/session'
-import { prisma } from '../../../lib/prisma'
-import { validatePayload, validateName, validateId, validateBoolean } from '../../../utils/validate';
-import { hashPassword } from '../../../utils/password';
-import crypto from 'node:crypto'
+import { checkSession } from '../../../../utils/session'
+import { prisma } from '../../../../lib/prisma'
+import { validatePayload, validateName, validateId, validateBoolean } from '../../../../utils/validate';
 
-export default function postCreateUser(app: express.Application) {
-    app.post('/api/v1/createUser', async (req, res) => {
+export default function postEditUser(app: express.Application) {
+    app.post('/api/v1/admin/editUser/:targetId', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {
@@ -14,11 +12,11 @@ export default function postCreateUser(app: express.Application) {
             return;
         }
 
+        const targetId = Number(req.params.targetId);
         const firstName = payload.firstName;
         const lastName = payload.lastName;
         const patrolId = payload.patrolId;
         const isLeaderOfPatrol = payload.isLeaderOfPatrol;
-        const isAssistantOfTroop = payload.isAssistantOfTroop;
         const userId = payload.userId;
         const sessionSecret = payload.sessionSecret;
 
@@ -44,6 +42,12 @@ export default function postCreateUser(app: express.Application) {
             return;
         }
 
+        const targetIdValidationRes = validateId(targetId);
+        if (!targetIdValidationRes.correct) {
+            res.status(targetIdValidationRes.statusCode).send('targetId: ' + targetIdValidationRes.message);
+            return;
+        }
+
         const firstNameValidationRes = validateName(firstName);
         if (!firstNameValidationRes.correct) {
             res.status(firstNameValidationRes.statusCode).send('firstName: ' + firstNameValidationRes.message);
@@ -56,19 +60,19 @@ export default function postCreateUser(app: express.Application) {
             return;
         }
 
-        const isAssistantOfTroopValidationRes = validateBoolean(isAssistantOfTroop);
-        if (!isAssistantOfTroopValidationRes.correct) {
-            res.status(isAssistantOfTroopValidationRes.statusCode).send('isAssistantOfTroop: ' + isAssistantOfTroopValidationRes.message);
+        const target = await prisma.user.findUnique({ where: { id: targetId }, include: { event: { include: { troop: true } } } });
+        if (!target) {
+            res.sendStatus(401);
             return;
         }
 
-        if (isAssistantOfTroop) {
-            if (!user.leaderOfTroopId) {
-                res.sendStatus(403);
-                return;
-            }
-
-            const target = await prisma.user.findFirst({
+        if (target.eventId !== user.eventId) {
+            res.sendStatus(403);
+            return;
+        }
+        
+        if (target.assistantOfTroopId) {
+            const newTarget = await prisma.user.findFirst({
                 where: {
                     firstName: firstName,
                     lastName: lastName,
@@ -76,24 +80,22 @@ export default function postCreateUser(app: express.Application) {
                 }
             });
 
-            if (target) {
+            if (newTarget) {
                 res.status(400).send('credentials: User with such credentials already exists!');
                 return;
             }
 
-            const newPassword = crypto.randomBytes(8).toString("hex");
-
-            const newUser = await prisma.user.create({
+            const updatedTarget = await prisma.user.update({
+                where: {
+                    id: target.id
+                },
                 data: {
                     firstName: firstName,
-                    lastName: lastName,
-                    passwordHash: hashPassword(newPassword),
-                    assistantOfTroopId: user.leaderOfTroopId,
-                    eventId: user.eventId
+                    lastName: lastName
                 }
             });
 
-            res.status(201).json({ id: newUser.id, newPassword: newPassword });
+            res.sendStatus(200);
             return;
         }
 
@@ -120,19 +122,6 @@ export default function postCreateUser(app: express.Application) {
             return;
         }
 
-        const target = await prisma.user.findFirst({
-            where: {
-                firstName: firstName,
-                lastName: lastName,
-                eventId: user.eventId
-            }
-        });
-
-        if (target) {
-            res.status(400).send('credentials: User with such credentials already exists!');
-            return;
-        }
-
         const leaderOfPatrol = await prisma.user.findFirst({
             where: {
                 leaderOfPatrolId: patrol.id
@@ -144,19 +133,32 @@ export default function postCreateUser(app: express.Application) {
             return;
         }
         
-        const newPassword = crypto.randomBytes(8).toString("hex");
-        const newUser = await prisma.user.create({
-            data: {
+        const newTarget = await prisma.user.findFirst({
+            where: {
                 firstName: firstName,
                 lastName: lastName,
-                passwordHash: hashPassword(newPassword),
-                leaderOfPatrolId: isLeaderOfPatrol ? patrolId : null,
-                patrolId: patrolId,
                 eventId: user.eventId
             }
         });
 
-        res.status(201).json({ id: newUser.id, newPassword: newPassword });
+        if (newTarget) {
+            res.status(400).send('credentials: User with such credentials already exists!');
+            return;
+        }
+
+        const updatedTarget = await prisma.user.update({
+            where: {
+                id: target.id
+            },
+            data: {
+                firstName: firstName,
+                lastName: lastName,
+                patrolId: patrolId,
+                leaderOfPatrolId: isLeaderOfPatrol ? patrolId : null
+            }
+        });
+
+        res.sendStatus(200);
     });
 
     return app;
