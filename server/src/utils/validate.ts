@@ -69,6 +69,29 @@ function validateName(name: any, allowDigits: boolean = false, allowSpaces: bool
     }
 }
 
+function validateDescription(description: any) : validateResult {
+    if (typeof description !== typeof "") {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given description must be a string!"
+        }
+    }
+    if (description.length > 1000) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given description must be at most 1000 characters long!"
+        }
+    }
+
+    return {
+        correct: true,
+        statusCode: 200,
+        message: "OK"
+    }
+}
+
 function validatePassword(password: any) : validateResult {
     if (typeof password !== typeof "") {
         return {
@@ -176,6 +199,38 @@ function validateId(id: any) : validateResult {
     }
 }
 
+function validatePositiveInteger(value: any) : validateResult {
+    if (typeof value !== typeof 1) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given value must be number type!"
+        }
+    }
+
+    if (!Number.isInteger(value)) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given number must be integer!"
+        }
+    }
+
+    if (value < 1) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given number must non-negative!"
+        }
+    }
+
+    return {
+        correct: true,
+        statusCode: 200,
+        message: "OK"
+    }
+}
+
 function validateBoolean(bool: any) : validateResult {
     if (typeof bool !== typeof true) {
         return {
@@ -193,4 +248,4 @@ function validateBoolean(bool: any) : validateResult {
 }
 
 
-export { validatePayload, validateName, validatePassword, parseAndValidateDate, validateId, validateBoolean }
+export { validatePayload, validateName, validatePassword, parseAndValidateDate, validateId, validateBoolean, validatePositiveInteger, validateDescription }

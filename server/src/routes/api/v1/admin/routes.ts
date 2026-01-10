@@ -8,6 +8,8 @@ import postEditEvent from './editEvent';
 import postDeleteUser from './deleteUser';
 import postDeletePatrol from './deletePatrol';
 import postDeleteEvent from './deleteEvent';
+import postCreateTaskTemplate from './createTaskTemplate';
+import postCreateTask from './createTask';
 
 export default function addAdminRoute(app: express.Application) {
     postCreateUser(app);
@@ -19,5 +21,7 @@ export default function addAdminRoute(app: express.Application) {
     postDeleteUser(app);
     postDeletePatrol(app);
     postDeleteEvent(app);
+    postCreateTaskTemplate(app);
+    postCreateTask(app);
     return app;
 }

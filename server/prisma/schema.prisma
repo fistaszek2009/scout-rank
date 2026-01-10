@@ -75,8 +75,8 @@ model TaskTemplate {
   title String
   description String
   maxPoints Int
-  repeating Boolean
   individualTask Boolean
+  optional Boolean
   event Event @relation(fields: [eventId], references: [id])
   eventId Int
   tasks Task[]
