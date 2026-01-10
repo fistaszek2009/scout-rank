@@ -62,7 +62,7 @@ export default function postEditUser(app: express.Application) {
 
         const target = await prisma.user.findUnique({ where: { id: targetId }, include: { event: { include: { troop: true } } } });
         if (!target) {
-            res.sendStatus(401);
+            res.sendStatus(400);
             return;
         }
 

@@ -72,7 +72,7 @@ export default function postEditEvent(app: express.Application) {
 
         const target = await prisma.event.findUnique({ where: { id: targetId } });
         if (!target) {
-            res.sendStatus(401);
+            res.sendStatus(400);
             return;
         }
 

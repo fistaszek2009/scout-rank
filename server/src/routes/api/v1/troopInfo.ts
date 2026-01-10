@@ -41,7 +41,7 @@ export default function getTroopInfo(app: express.Application) {
 
         const troop = await prisma.troop.findUnique({ where: { id: troopId }, include: { event: true } });
         if (!troop) {
-            res.sendStatus(401);
+            res.sendStatus(400);
             return;
         }
 

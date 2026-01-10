@@ -41,7 +41,7 @@ export default function getEventInfo(app: express.Application) {
 
         const event = await prisma.event.findUnique({ where: { id: eventId } });
         if (!event) {
-            res.sendStatus(401);
+            res.sendStatus(400);
             return;
         }
 

@@ -53,7 +53,7 @@ export default function postEditPatrol(app: express.Application) {
 
         const target = await prisma.patrol.findUnique({ where: { id: targetId }, include: { troop: { include: { event: true } } } });
         if (!target) {
-            res.sendStatus(401);
+            res.sendStatus(400);
             return;
         }
 

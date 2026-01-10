@@ -53,7 +53,7 @@ export default function postEditTroop(app: express.Application) {
 
         const target = await prisma.troop.findUnique({ where: { id: targetId }, include: { event: true } });
         if (!target) {
-            res.sendStatus(401);
+            res.sendStatus(400);
             return;
         }
 

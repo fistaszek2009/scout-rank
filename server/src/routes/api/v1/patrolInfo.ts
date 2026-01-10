@@ -41,7 +41,7 @@ export default function getPatrolInfo(app: express.Application) {
 
         const patrol = await prisma.patrol.findUnique({ where: { id: patrolId }, include: { troop: { include: { event: true } } } });
         if (!patrol) {
-            res.sendStatus(401);
+            res.sendStatus(400);
             return;
         }
 
