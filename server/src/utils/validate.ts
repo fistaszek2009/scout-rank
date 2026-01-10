@@ -5,7 +5,7 @@ type validateResult = {
 }
 
 function validatePayload(payload: any) : validateResult {
-    if (typeof payload != typeof {}) {
+    if (typeof payload !== typeof {}) {
         return {
             correct: false,
             statusCode: 400,
@@ -112,7 +112,7 @@ function validatePassword(password: any) : validateResult {
 function parseAndValidateDate(date_str: any) : { date: Date, result: validateResult } {
     const date = new Date(Date.parse(date_str))
 
-    if (!date) {
+    if (!date || isNaN(date.getTime())) {
         return {
             date: date,
             result: {
@@ -123,7 +123,7 @@ function parseAndValidateDate(date_str: any) : { date: Date, result: validateRes
         }
     }
 
-    if (typeof date !== typeof (new Date)) {
+    if (!(date instanceof Date)) {
          return {
             date: date,
             result: {
