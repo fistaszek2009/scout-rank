@@ -52,10 +52,15 @@ export default function getPatrolInfo(app: express.Application) {
 
         if ((user.assistantOfTroopId || user.leaderOfTroopId) 
             || (user.patrolId == patrolId)) {
+            const patrolLeader = await prisma.user.findFirst({ where: { leaderOfPatrolId: patrol.id } });
+            const members = await prisma.user.findMany({ where: { patrolId: patrol.id } });
+
             res.status(200).json({
                 id: patrol.id,
                 name: patrol.name,
-                troopId: patrol.troopId
+                patrolLeaderId: patrolLeader?.id,
+                troopId: patrol.troopId,
+                membersIds: members.map((member) => member.id)
             });
             return;
         }

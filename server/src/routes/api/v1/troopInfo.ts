@@ -50,9 +50,16 @@ export default function getTroopInfo(app: express.Application) {
             return;
         }
 
+        const troopLeader = await prisma.user.findFirst({ where: { leaderOfTroopId: troopId } });
+        const patrols = await prisma.patrol.findMany({ where: { troopId: troop.id } });
+        const assistants = await prisma.user.findMany({ where: { assistantOfTroopId: troop.id } });
+
         res.status(200).json({
             id: troop.id,
-            name: troop.name
+            name: troop.name,
+            troopLeaderId: troopLeader?.id,
+            troopAssistantsIds: assistants.map((assistant) => assistant.id),
+            patrolsIds: patrols.map((patrol) => patrol.id)
         });
     });
     return app;
