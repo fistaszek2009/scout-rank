@@ -1,10 +1,10 @@
 import express from 'express'
-import { validatePayload, validateId } from '../../../utils/validate'
-import { prisma } from '../../../lib/prisma'
-import { checkSession } from '../../../utils/session'
+import { validatePayload, validateId } from '../../../../utils/validate'
+import { prisma } from '../../../../lib/prisma'
+import { checkSession } from '../../../../utils/session'
 
-export default function getUserInfo(app: express.Application) {
-    app.get('/api/v1/userInfo/:targetId', async (req, res) => {
+export default function getUser(app: express.Application) {
+    app.get('/api/v1/info/user/:targetId', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {
@@ -53,19 +53,16 @@ export default function getUserInfo(app: express.Application) {
         if ((user.assistantOfTroopId || user.leaderOfTroopId) 
             || (user.leaderOfPatrolId && user.patrolId == target.patrolId) 
             || user.id == target.id) {
-            res.status(200).json(await prisma.user.findUnique({
-                where: { id: targetId },
-                select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                    patrolId: true,
-                    leaderOfPatrolId: true,
-                    leaderOfTroopId: true,
-                    assistantOfTroopId: true,
-                    eventId: true
-                }
-            }));
+            res.status(200).json({
+                id: target.id,
+                firstName: target.firstName,
+                lastName: target.lastName,
+                patrolId: target.patrolId,
+                leaderOfPatrolId: target.leaderOfPatrolId,
+                leaderOfTroopId: target.leaderOfTroopId,
+                assistantOfTroopId: target.assistantOfTroopId,
+                eventId: target.eventId
+            });
             return;
         }
 

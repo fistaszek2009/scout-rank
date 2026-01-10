@@ -1,10 +1,10 @@
 import express from 'express'
-import { validatePayload, validateId } from '../../../utils/validate'
-import { prisma } from '../../../lib/prisma'
-import { checkSession } from '../../../utils/session'
+import { validatePayload, validateId } from '../../../../utils/validate'
+import { prisma } from '../../../../lib/prisma'
+import { checkSession } from '../../../../utils/session'
 
-export default function getEventInfo(app: express.Application) {
-    app.get('/api/v1/eventInfo/:eventId', async (req, res) => {
+export default function getEvent(app: express.Application) {
+    app.get('/api/v1/info/event/:eventId', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {
@@ -50,12 +50,15 @@ export default function getEventInfo(app: express.Application) {
             return;
         }
 
+        const taskTemplates = await prisma.taskTemplate.findMany({ where: { eventId: event.id } });
+
         res.status(200).json({
             id: event.id,
             name: event.name,
             troopId: event.troopId,
             startDate: event.startDate,
-            endDate: event.endDate
+            endDate: event.endDate,
+            taskTemplateIds: taskTemplates.map((taskTemplate) => taskTemplate.id)
         });
     });
     return app;

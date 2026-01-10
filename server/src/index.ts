@@ -1,6 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import addV1Route from './routes/api/v1/route';
+import addV1Route from './routes/api/v1/routes';
 
 const PORT = process.env.PORT ?? 3000;
 const app = express();
