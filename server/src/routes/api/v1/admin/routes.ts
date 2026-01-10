@@ -5,6 +5,9 @@ import postEditUser from './editUser';
 import postEditPatrol from './editPatrol';
 import postEditTroop from './editTroop';
 import postEditEvent from './editEvent';
+import postDeleteUser from './deleteUser';
+import postDeletePatrol from './deletePatrol';
+import postDeleteEvent from './deleteEvent';
 
 export default function addAdminRoute(app: express.Application) {
     postCreateUser(app);
@@ -13,5 +16,8 @@ export default function addAdminRoute(app: express.Application) {
     postEditPatrol(app);
     postEditTroop(app);
     postEditEvent(app);
+    postDeleteUser(app);
+    postDeletePatrol(app);
+    postDeleteEvent(app);
     return app;
 }
