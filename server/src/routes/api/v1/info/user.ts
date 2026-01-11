@@ -53,6 +53,13 @@ export default function getUser(app: express.Application) {
         if ((user.assistantOfTroopId || user.leaderOfTroopId) 
             || (user.leaderOfPatrolId && user.patrolId == target.patrolId) 
             || user.id == target.id) {
+
+            const userTaskScores = await prisma.userTaskScore.findMany({
+                where: {
+                    userId: target.id
+                }
+            });
+
             res.status(200).json({
                 id: target.id,
                 firstName: target.firstName,
@@ -61,7 +68,14 @@ export default function getUser(app: express.Application) {
                 leaderOfPatrolId: target.leaderOfPatrolId,
                 leaderOfTroopId: target.leaderOfTroopId,
                 assistantOfTroopId: target.assistantOfTroopId,
-                eventId: target.eventId
+                eventId: target.eventId,
+                scores: userTaskScores.map((userTaskScore) => {
+                    return {
+                        id: userTaskScore.id,
+                        score: userTaskScore.score,
+                        taskId: userTaskScore.taskId,
+                    }
+                })
             });
             return;
         }

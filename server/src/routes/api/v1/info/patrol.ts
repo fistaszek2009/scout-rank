@@ -54,13 +54,25 @@ export default function getPatrol(app: express.Application) {
             || (user.patrolId == patrolId)) {
             const patrolLeader = await prisma.user.findFirst({ where: { leaderOfPatrolId: patrol.id } });
             const members = await prisma.user.findMany({ where: { patrolId: patrol.id } });
+            const patrolTaskScores = await prisma.patrolTaskScore.findMany({
+                where: {
+                    patrolId: patrol.id
+                }
+            });
 
             res.status(200).json({
                 id: patrol.id,
                 name: patrol.name,
                 patrolLeaderId: patrolLeader?.id,
                 troopId: patrol.troopId,
-                membersIds: members.map((member) => member.id)
+                membersIds: members.map((member) => member.id),
+                scores: patrolTaskScores.map((patrolTaskScore) => {
+                    return {
+                        id: patrolTaskScore.id,
+                        score: patrolTaskScore.score,
+                        taskId: patrolTaskScore.taskId,
+                    }
+                })
             });
             return;
         }
