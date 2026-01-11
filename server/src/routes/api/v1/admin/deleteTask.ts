@@ -27,7 +27,7 @@ export default function postDeleteTask(app: express.Application) {
             return;
         }
 
-        const user = await prisma.user.findUnique({ where: { id: userId }, include: { event: { include: { troop: true } } } });
+        const user = await prisma.user.findUnique({ where: { id: userId } });
         if (!user) {
             res.sendStatus(401);
             return;

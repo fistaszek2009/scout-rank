@@ -33,13 +33,13 @@ export default function getUser(app: express.Application) {
             return;
         }
 
-        const user = await prisma.user.findUnique({ where: { id: userId }, include: { event: true } });
+        const user = await prisma.user.findUnique({ where: { id: userId } });
         if (!user) {
             res.sendStatus(401);
             return;
         }
 
-        const target = await prisma.user.findUnique({ where: { id: targetId }, include: { event: true } });
+        const target = await prisma.user.findUnique({ where: { id: targetId } });
         if (!target) {
             res.status(400).send('targetId: User does not exist!');
             return;

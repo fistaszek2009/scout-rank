@@ -1,12 +1,12 @@
 import express from 'express'
-import { checkSession } from '../../../utils/session'
-import { prisma } from '../../../lib/prisma'
-import { validatePayload, validatePassword, validateId } from '../../../utils/validate';
-import { hashPassword } from '../../../utils/password';
+import { checkSession } from '../../../../utils/session'
+import { prisma } from '../../../../lib/prisma'
+import { validatePayload, validatePassword, validateId } from '../../../../utils/validate';
+import { hashPassword } from '../../../../utils/password';
 import crypto from 'node:crypto'
 
 export default function postResetPassword(app: express.Application) {
-    app.post('/api/v1/resetPassword', async (req, res) => {
+    app.post('/api/v1/account/resetPassword', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {
@@ -35,13 +35,13 @@ export default function postResetPassword(app: express.Application) {
             return;
         }
 
-        const user = await prisma.user.findUnique({ where: { id: userId }, include: { event: true } });
+        const user = await prisma.user.findUnique({ where: { id: userId } });
         if (!user) {
             res.sendStatus(401);
             return;
         }
 
-        const target = await prisma.user.findUnique({ where: { id: targetId }, include: { event: true } });
+        const target = await prisma.user.findUnique({ where: { id: targetId } });
         if (!target) {
             res.status(400).send('targetId: User does not exist!');
             return;

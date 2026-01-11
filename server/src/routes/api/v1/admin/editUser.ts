@@ -31,7 +31,7 @@ export default function postEditUser(app: express.Application) {
             return;
         }
 
-        const user = await prisma.user.findUnique({ where: { id: userId }, include: { event: { include: { troop: true } } } });
+        const user = await prisma.user.findUnique({ where: { id: userId }, include: { event: true } });
         if (!user) {
             res.sendStatus(401);
             return;
@@ -60,7 +60,7 @@ export default function postEditUser(app: express.Application) {
             return;
         }
 
-        const target = await prisma.user.findUnique({ where: { id: targetId }, include: { event: { include: { troop: true } } } });
+        const target = await prisma.user.findUnique({ where: { id: targetId } });
         if (!target) {
             res.sendStatus(400);
             return;

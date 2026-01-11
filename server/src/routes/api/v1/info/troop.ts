@@ -33,7 +33,7 @@ export default function getTroop(app: express.Application) {
             return;
         }
 
-        const user = await prisma.user.findUnique({ where: { id: userId }, include: { event: true } });
+        const user = await prisma.user.findUnique({ where: { id: userId } });
         if (!user) {
             res.sendStatus(401);
             return;

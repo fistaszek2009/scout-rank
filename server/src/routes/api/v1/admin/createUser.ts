@@ -33,7 +33,7 @@ export default function postCreateUser(app: express.Application) {
             return;
         }
 
-        const user = await prisma.user.findUnique({ where: { id: userId }, include: { event: { include: { troop: true } } } });
+        const user = await prisma.user.findUnique({ where: { id: userId }, include: { event: true } });
         if (!user) {
             res.sendStatus(401);
             return;
