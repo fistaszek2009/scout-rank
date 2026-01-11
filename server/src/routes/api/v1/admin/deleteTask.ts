@@ -3,8 +3,8 @@ import { checkSession } from '../../../../utils/session'
 import { prisma } from '../../../../lib/prisma'
 import { validatePayload, validateId } from '../../../../utils/validate';
 
-export default function postDeleteUser(app: express.Application) {
-    app.post('/api/v1/admin/deleteUser/:targetId', async (req, res) => {
+export default function postDeleteTask(app: express.Application) {
+    app.post('/api/v1/admin/deleteTask/:targetId', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {
@@ -27,7 +27,7 @@ export default function postDeleteUser(app: express.Application) {
             return;
         }
 
-        const user = await prisma.user.findUnique({ where: { id: userId } });
+        const user = await prisma.user.findUnique({ where: { id: userId }, include: { event: { include: { troop: true } } } });
         if (!user) {
             res.sendStatus(401);
             return;
@@ -44,31 +44,20 @@ export default function postDeleteUser(app: express.Application) {
             return;
         }
 
-        const target = await prisma.user.findUnique({ where: { id: targetId } });
+        const target = await prisma.task.findUnique({ where: { id: targetId }, include: { taskTemplate: true } });
         if (!target) {
             res.sendStatus(400);
             return;
         }
 
-        if (target.eventId !== user.eventId) {
-            res.sendStatus(403);
-            return;
-        }
-        
-        if (target.assistantOfTroopId && user.assistantOfTroopId) {
+        if (target.taskTemplate.eventId !== user.eventId) {
             res.sendStatus(403);
             return;
         }
 
-        if (target.leaderOfTroopId) {
-            res.sendStatus(400);
-            return;
-        }
-
-        await prisma.userTaskScore.deleteMany({ where: { userId: target.id } });
-        await prisma.session.deleteMany({ where: { userId: target.id } });
-        await prisma.userTaskScore.deleteMany({ where: { userId: target.id } });
-        await prisma.user.delete({ where: { id: target.id } });
+        await prisma.userTaskScore.deleteMany({ where: { taskId: target.id } });
+        await prisma.patrolTaskScore.deleteMany({ where: { taskId: target.id } });
+        await prisma.task.delete({ where: { id: targetId } });
 
         res.sendStatus(200);
     });

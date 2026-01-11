@@ -1,10 +1,10 @@
 import express from 'express'
 import { checkSession } from '../../../../utils/session'
 import { prisma } from '../../../../lib/prisma'
-import { validatePayload, validateName, validateId, validateBoolean, validateDescription, validatePositiveInteger, parseAndValidateDate } from '../../../../utils/validate';
+import { validatePayload, validateId, parseAndValidateDate } from '../../../../utils/validate';
 
-export default function postCreateTask(app: express.Application) {
-    app.post('/api/v1/admin/createTask', async (req, res) => {
+export default function postEditTask(app: express.Application) {
+    app.post('/api/v1/admin/editTask/:targetId', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {
@@ -12,6 +12,7 @@ export default function postCreateTask(app: express.Application) {
             return;
         }
 
+        const targetId = Number(req.params.targetId);
         const taskTemplateId = payload.taskTemplateId;
         const taskDateStr = payload.taskDate;
         const userId = payload.userId;
@@ -39,6 +40,12 @@ export default function postCreateTask(app: express.Application) {
             return;
         }
 
+        const targetIdValidationRes = validateId(targetId);
+        if (!targetIdValidationRes.correct) {
+            res.status(targetIdValidationRes.statusCode).send('targetId: ' + targetIdValidationRes.message);
+            return;
+        }
+
         const { date: taskDate, result: taskDateValidationRes } = parseAndValidateDate(taskDateStr);
         if (!taskDateValidationRes.correct) {
             res.status(taskDateValidationRes.statusCode).send('taskDate: ' + taskDateValidationRes.message);
@@ -57,19 +64,33 @@ export default function postCreateTask(app: express.Application) {
             return;
         }
 
+        const target = await prisma.task.findUnique({ where: { id: targetId }, include: { taskTemplate: true } });
+        if (!target) {
+            res.sendStatus(400);
+            return;
+        }
+
+        if (target.taskTemplate.eventId !== user.eventId) {
+            res.sendStatus(403);
+            return;
+        }
+
         if (taskTemplate.eventId !== user.eventId) {
             res.sendStatus(403);
             return;
         }
         
-        const newTask = await prisma.task.create({
+        const updatedTarget = await prisma.task.update({
+            where: {
+                id: target.id
+            },
             data: {
-                taskTemplateId: taskTemplate.id,
+                taskTemplateId: taskTemplateId,
                 date: taskDate
             }
         });
 
-        res.status(201).json({ id: newTask.id });
+        res.sendStatus(200);
     });
 
     return app;

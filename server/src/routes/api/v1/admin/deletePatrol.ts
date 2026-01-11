@@ -55,6 +55,8 @@ export default function postDeletePatrol(app: express.Application) {
             return;
         }
         
+        await prisma.userTaskScore.deleteMany({ where: { user: { patrolId: target.id } } });
+        await prisma.patrolTaskScore.deleteMany({ where: { patrolId: target.id } });
         await prisma.session.deleteMany({ where: { user: { patrolId: target.id } } });
         await prisma.userTaskScore.deleteMany({ where: { user: { patrolId: target.id } } });
         await prisma.user.deleteMany({ where: { patrolId: target.id } });
