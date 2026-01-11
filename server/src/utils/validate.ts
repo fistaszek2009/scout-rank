@@ -220,6 +220,38 @@ function validatePositiveInteger(value: any) : validateResult {
         return {
             correct: false,
             statusCode: 400,
+            message: "Given number must positive!"
+        }
+    }
+
+    return {
+        correct: true,
+        statusCode: 200,
+        message: "OK"
+    }
+}
+
+function validateNonnegativeInteger(value: any) : validateResult {
+    if (typeof value !== typeof 1) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given value must be number type!"
+        }
+    }
+
+    if (!Number.isInteger(value)) {
+        return {
+            correct: false,
+            statusCode: 400,
+            message: "Given number must be integer!"
+        }
+    }
+
+    if (value < 0) {
+        return {
+            correct: false,
+            statusCode: 400,
             message: "Given number must non-negative!"
         }
     }
@@ -248,4 +280,14 @@ function validateBoolean(bool: any) : validateResult {
 }
 
 
-export { validatePayload, validateName, validatePassword, parseAndValidateDate, validateId, validateBoolean, validatePositiveInteger, validateDescription }
+export {
+    validatePayload,
+    validateName,
+    validatePassword,
+    parseAndValidateDate,
+    validateId,
+    validateBoolean,
+    validatePositiveInteger,
+    validateDescription,
+    validateNonnegativeInteger
+}
