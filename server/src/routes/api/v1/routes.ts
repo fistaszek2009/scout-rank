@@ -5,14 +5,14 @@ import addAccountRoute from './account/routes';
 import addScoresRoute from './scores/routes';
 import postRegister from './register'
 import postLogin from './login';
-import getVerifySecretCode from './verifySecretCode';
+import postVerifySecretCode from './verifySecretCode';
 
 export default function addV1Route(app: express.Application) {
     addAdminRoute(app);
     addInfoRoute(app);
     addAccountRoute(app);
     addScoresRoute(app);
-    getVerifySecretCode(app);
+    postVerifySecretCode(app);
     postRegister(app);
     postLogin(app);
     return app;
