@@ -23,7 +23,7 @@ export default function RegisterKey() {
     setIsSubmitting(true);
 
     try {
-      const url = process.env.EXPO_PUBLIC_API_VERIFY_SECRETCODE;
+      const url = process.env.EXPO_PUBLIC_API_URL + "/verifySecretCode";
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -40,8 +40,10 @@ export default function RegisterKey() {
         return;
       }
 
-      const data = await response.json();
-      router.replace("/(main)/individual");
+      else{
+        router.replace("/(entry)/register/event");
+      }
+
     } catch (error) {
       setApiError("Błąd sieci. Sprawdź połączenie.");
       console.error("Register key error:", error);

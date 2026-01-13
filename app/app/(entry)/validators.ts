@@ -7,7 +7,7 @@ export const validateEventId = (id: string): string | undefined => {
   return undefined;
 };
 
-export const validateName = (name: string): string | undefined => {
+export const validateUserName = (name: string): string | undefined => {
   if (!name) return "To pole jest wymagane";
   if (name.length > 50) return "Maksymalnie 50 znaków";
   if (!/^[\p{L}-]+$/u.test(name)) {
@@ -26,5 +26,11 @@ export const validatePassword = (password: string): string | undefined => {
 export const validateSecretCode = (secretCode: string): string | undefined => {
   if (!secretCode) return "To pole jest wymagane";
   if (secretCode.length > 200) return "Maksymalnie 200 znaków";
+  return undefined;
+};
+
+export const validateName = (name: string): string | undefined => {
+  if (!name) return "To pole jest wymagane";
+  if (name.length > 100) return "Maksymalnie 100 znaków";
   return undefined;
 };
