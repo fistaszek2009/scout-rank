@@ -6,6 +6,7 @@ import { useFormValidation } from "@/utils/useFormValidation";
 import { validateEventId, validateName, validatePassword } from "@/utils/validators";
 import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
 import CustomButton from "@/comp/CustomButton"
+import { setSessionInfo } from "@/utils/session";
 
 export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,13 +57,12 @@ export default function Login() {
     
       const data = await response.json();
 
-      // TODO: Store session data securely using AsyncStorage or SecureStore
-      // import AsyncStorage from '@react-native-async-storage/async-storage';
-      // await AsyncStorage.setItem('userId', data.userId.toString());
-      // await AsyncStorage.setItem('sessionSecret', data.session);
+      await setSessionInfo({
+        userId: data.userId,
+        sessionSecret: data.session
+      });
 
-      router.replace("/(main)/individual");
-
+      router.replace("/");
     } catch (error) {
       setApiError("Błąd sieci. Sprawdź połączenie.");
       console.error("Login error:", error);
