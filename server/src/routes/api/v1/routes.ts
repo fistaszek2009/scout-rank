@@ -6,6 +6,7 @@ import addScoresRoute from './scores/routes';
 import postRegister from './register'
 import postLogin from './login';
 import postVerifySecretCode from './verifySecretCode';
+import postVerifySession from './verifySession';
 
 export default function addV1Route(app: express.Application) {
     addAdminRoute(app);
@@ -13,6 +14,7 @@ export default function addV1Route(app: express.Application) {
     addAccountRoute(app);
     addScoresRoute(app);
     postVerifySecretCode(app);
+    postVerifySession(app);
     postRegister(app);
     postLogin(app);
     return app;
