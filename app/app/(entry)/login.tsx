@@ -1,10 +1,11 @@
-import { Text, View, TextInput, Pressable } from "react-native";
+import { Text, View, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { useFormValidation } from "./useFormValidation";
-import { validateEventId, validateName, validatePassword } from "./validators";
+import { useFormValidation } from "@/utils/useFormValidation";
+import { validateEventId, validateName, validatePassword } from "@/utils/validators";
 import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
+import CustomButton from "@/comp/CustomButton"
 
 export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,7 +35,7 @@ export default function Login() {
     setIsSubmitting(true);
 
     try {
-      const url = process.env.EXPO_PUBLIC_API_URL + "/login"
+      const url = process.env.EXPO_PUBLIC_API_URL + "/api/v1/login"
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -48,7 +49,6 @@ export default function Login() {
 
       if (!response.ok) {
         const data = await response.text()
-        console.log(data)
         const errorMessage = typeof data === "string" ? data : "Błąd logowania";
         setApiError(errorMessage);
         return;
@@ -155,22 +155,20 @@ export default function Login() {
               </View>
 
               <View className="flex-row justify-center gap-4">
-                <Link
-                  href="/(entry)/register/key"
-                  className="text-slate-700 px-4 py-2 rounded underline"
-                >
-                  Zarejestruj się
-                </Link>
+                <CustomButton
+                  onPress={() => { router.replace('/(entry)/register/key') }}
+                  className="px-4 py-2 rounded"
+                  textClassName="text-slate-700 underline"
+                  text="Zarejestruj się"
+                />
 
-                <Pressable
+                <CustomButton
                   onPress={handleLogin}
                   disabled={isSubmitting}
                   className="bg-slate-700 px-4 py-2 rounded"
-                >
-                  <Text className="text-white font-semibold">
-                    {isSubmitting ? "Logowanie..." : "Zaloguj się"}
-                  </Text>
-                </Pressable>
+                  textClassName="text-white font-semibold"
+                  text={isSubmitting ? "Logowanie...." : "Zaloguj się"}
+                />
               </View>
             </View>
           

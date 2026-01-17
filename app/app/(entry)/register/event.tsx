@@ -1,10 +1,11 @@
-import { Text, View, TextInput, Pressable } from "react-native";
+import { Text, View, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, router } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { useFormValidation } from "../useFormValidation";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { validateName } from "../validators";
+import { useFormValidation } from "@/utils/useFormValidation";
+import { validateName } from "@/utils/validators";
+import DateInput from "@/comp/DateInput";
+import CustomButton from "@/comp/CustomButton"
 
 export const validateDate = (name: string): string | undefined => {
   if (!name) return "To pole jest wymagane";
@@ -13,6 +14,7 @@ export const validateDate = (name: string): string | undefined => {
 };
 
 export default function RegisterEvent() {
+  const params = useLocalSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -24,17 +26,6 @@ export default function RegisterEvent() {
       { eventName: validateName, troopName: validateName }
     );
 
-  const handleDateChange = (date: Date | undefined) => {
-    if (!date) return;
-
-    if (datePickerMode === "start") {
-      setStartDate(date);
-    } else if (datePickerMode === "end") {
-      setEndDate(date);
-    }
-    setDatePickerMode(null);
-  };
-
   const handleContinue = async () => {
     if (isSubmitting) return;
 
@@ -42,13 +33,22 @@ export default function RegisterEvent() {
       return;
     }
 
-    if (startDate >= endDate) {
-      setApiError("Data początkowa musi być przed datą końcową");
+    if (startDate > endDate) {
+      setApiError("Data początkowa nie może być po dacie końcowej");
       return;
     }
 
     // TODO: pass all data
-    router.replace("/(entry)/register/user")
+    router.push({ 
+      pathname: "/(entry)/register/user",
+      params: {
+        secretCode: params.secretCode,
+        eventName: values.eventName,
+        troopName: values.troopName,
+        startDate: startDate.toDateString(),
+        endDate: endDate.toDateString()
+      }
+    });
   };
 
   return (
@@ -108,62 +108,30 @@ export default function RegisterEvent() {
 
             <View>
               <Text className="mb-1 text-sm text-slate-700">Data rozpoczęcia</Text>
-              <Pressable
-                onPress={() => setDatePickerMode("start")}
-                className="bg-white p-3 rounded border-2 border-white"
-              >
-                <Text className="text-slate-700">
-                  {startDate.toLocaleDateString("pl-PL")}
-                </Text>
-              </Pressable>
-              {datePickerMode === "start" && (
-                <DateTimePicker
-                  value={startDate}
-                  mode="date"
-                  display="default"
-                  onChange={(event, date) => handleDateChange(date)}
-                />
-              )}
+              <DateInput value={startDate} onChange={setStartDate} />
             </View>
 
             <View>
               <Text className="mb-1 text-sm text-slate-700">Data zakończenia</Text>
-              <Pressable
-                onPress={() => setDatePickerMode("end")}
-                className="bg-white p-3 rounded border-2 border-white"
-              >
-                <Text className="text-slate-700">
-                  {endDate.toLocaleDateString("pl-PL")}
-                </Text>
-              </Pressable>
-              {datePickerMode === "end" && (
-                <DateTimePicker
-                  value={endDate}
-                  mode="date"
-                  display="default"
-                  onChange={(event, date) => handleDateChange(date)}
-                />
-              )}
+              <DateInput value={endDate} onChange={setEndDate} />
             </View>
           </View>
 
           <View className="flex-row justify-center gap-4">
-            <Link
-              href="/(entry)/register/key"
-              className="text-slate-700 px-4 py-2 rounded underline"
-            >
-              Wstecz
-            </Link>
+            <CustomButton
+              onPress={() => { router.back() }}
+              className="px-4 py-2 rounded"
+              textClassName="text-slate-700 underline"
+              text="Wstecz"
+            />
 
-            <Pressable
+            <CustomButton
               onPress={handleContinue}
               disabled={isSubmitting}
               className="bg-slate-700 px-4 py-2 rounded"
-            >
-              <Text className="text-white font-semibold">
-                {isSubmitting ? "Sprawdzanie..." : "Dalej"}
-              </Text>
-            </Pressable>
+              textClassName="text-white font-semibold"
+              text={isSubmitting ? "Sprawdzanie..." : "Dalej"}
+            />
           </View>
         </View>
       </View>
