@@ -3,8 +3,8 @@ import { validatePayload, validateId } from '../../../../utils/validate'
 import { prisma } from '../../../../lib/prisma'
 import { checkSession } from '../../../../utils/session'
 
-export default function getUser(app: express.Application) {
-    app.get('/api/v1/info/user/:targetId', async (req, res) => {
+export default function postUser(app: express.Application) {
+    app.post('/api/v1/info/user/:targetId', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {

@@ -1,17 +1,17 @@
 import express from 'express'
-import getUser from './user';
-import getPatrol from './patrol';
-import getTroop from './troop';
-import getEvent from './event';
-import getTaskTemplate from './taskTemplate';
-import getTask from './task';
+import postUser from './user';
+import postPatrol from './patrol';
+import postTroop from './troop';
+import postEvent from './event';
+import postTaskTemplate from './taskTemplate';
+import postTask from './task';
 
 export default function addInfoRoute(app: express.Application) {
-    getUser(app);
-    getPatrol(app);
-    getTroop(app);
-    getEvent(app);
-    getTaskTemplate(app);
-    getTask(app);
+    postUser(app);
+    postPatrol(app);
+    postTroop(app);
+    postEvent(app);
+    postTaskTemplate(app);
+    postTask(app);
     return app;
 }

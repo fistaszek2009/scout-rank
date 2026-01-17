@@ -3,8 +3,8 @@ import { validatePayload, validateId } from '../../../../utils/validate'
 import { prisma } from '../../../../lib/prisma'
 import { checkSession } from '../../../../utils/session'
 
-export default function getTaskTemplate(app: express.Application) {
-    app.get('/api/v1/info/taskTemplate/:taskTemplateId', async (req, res) => {
+export default function postTaskTemplate(app: express.Application) {
+    app.post('/api/v1/info/taskTemplate/:taskTemplateId', async (req, res) => {
         const payload = req.body;
         const payloadValidationRes = validatePayload(payload);
         if (!payloadValidationRes.correct) {
