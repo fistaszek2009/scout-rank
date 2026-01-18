@@ -51,6 +51,7 @@ export default function postEvent(app: express.Application) {
         }
 
         const taskTemplates = await prisma.taskTemplate.findMany({ where: { eventId: event.id } });
+        const tasks = await prisma.task.findMany({ where: { taskTemplate: { eventId: event.id } }, include: { taskTemplate: true } });
 
         res.status(200).json({
             id: event.id,
@@ -58,7 +59,22 @@ export default function postEvent(app: express.Application) {
             troopId: event.troopId,
             startDate: event.startDate,
             endDate: event.endDate,
-            taskTemplateIds: taskTemplates.map((taskTemplate) => taskTemplate.id)
+            taskTemplates: taskTemplates.map((taskTemplate) => {
+                return {
+                    id: taskTemplate.id,
+                    title: taskTemplate.title,
+                    individual: taskTemplate.individualTask,
+                    maxPoints: taskTemplate.maxPoints,
+                    optional: taskTemplate.optional
+                }
+            }),
+            tasks: tasks.map((task) => {
+                return {
+                    id: task.id,
+                    date: task.date,
+                    taskTemplateId: task.taskTemplateId
+                }
+            })
         });
     });
     return app;
