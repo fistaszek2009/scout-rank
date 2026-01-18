@@ -57,6 +57,13 @@ export default function postUser(app: express.Application) {
             const userTaskScores = await prisma.userTaskScore.findMany({
                 where: {
                     userId: target.id
+                },
+                include: {
+                    task: {
+                        include: {
+                            taskTemplate: true
+                        }
+                    }
                 }
             });
 
@@ -73,7 +80,12 @@ export default function postUser(app: express.Application) {
                     return {
                         id: userTaskScore.id,
                         score: userTaskScore.score,
+                        title: userTaskScore.task.taskTemplate.title,
+                        date: userTaskScore.task.date,
+                        maxPoints: userTaskScore.task.taskTemplate.maxPoints,
+                        optional: userTaskScore.task.taskTemplate.optional,
                         taskId: userTaskScore.taskId,
+                        taskTemplateId: userTaskScore.task.taskTemplateId
                     }
                 })
             });
