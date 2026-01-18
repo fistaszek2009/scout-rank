@@ -10,7 +10,7 @@ export default function Index() {
             const sessionInfo = await getSessionInfo();
 
             if (sessionInfo && await checkSession(sessionInfo)) {
-                router.replace('/(main)/individual')
+                router.replace('/(main)/dashboard')
                 return;
             }
             router.replace('/(entry)/login')
