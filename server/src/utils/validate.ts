@@ -42,19 +42,18 @@ function validateName(name: any, allowDigits: boolean = false, allowSpaces: bool
             message: "Given name must be at most 50 characters long!"
         }
     }
-    const normalizedName = name.normalize('NFD');
     
-    let regexCheck = /^[\w-]+$/g;
+    let regexCheck = /^[\p{L}-]+$/u;
     if (allowDigits) {
-        regexCheck = /^[\w\d-]+$/g;
+        regexCheck = /^[\p{L}\d-]+$/u;
         if (allowSpaces) {
-            regexCheck = /^[\w\d\s-]+$/g;
+            regexCheck = /^[\p{L}\d\s-]+$/u;
         }
     } else if (allowSpaces) {
-        regexCheck = /^[\w\s-]+$/g;
+        regexCheck = /^[\p{L}\s-]+$/u;
     }
 
-    if (!regexCheck.test(normalizedName)) {
+    if (!regexCheck.test(name)) {
         return {
             correct: false,
             statusCode: 400,
