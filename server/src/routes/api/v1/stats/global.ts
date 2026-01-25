@@ -32,11 +32,13 @@ export default function postGlobal(app: express.Application) {
             return;
         }
 
-        const scouts = await prisma.user.findMany({ where: { eventId: user.eventId, assistantOfTroopId: null, leaderOfTroopId: null }, include: { taskScores: true } });
+        const scouts = await prisma.user.findMany({ where: { eventId: user.eventId, assistantOfTroopId: null, leaderOfTroopId: null }, include: { taskScores: true, patrol: true } });
         const ranking = scouts.map((scout) => {
             return {
                 id: scout.id,
                 firstName: scout.firstName,
+                patrolId: scout.patrolId,
+                patrolName: scout.patrol?.name,
                 totalScore: scout.taskScores.reduce((a, x) => a + x.score, 0)
             }
         });

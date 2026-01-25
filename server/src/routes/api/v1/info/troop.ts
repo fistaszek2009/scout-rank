@@ -59,7 +59,7 @@ export default function postTroop(app: express.Application) {
             name: troop.name,
             troopLeaderId: troopLeader?.id,
             troopAssistantsIds: assistants.map((assistant) => assistant.id),
-            patrolsIds: patrols.map((patrol) => patrol.id)
+            patrols: patrols.map((patrol) => { return { id: patrol.id, name: patrol.name } })
         });
     });
     return app;
