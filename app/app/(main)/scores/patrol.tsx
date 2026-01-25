@@ -2,12 +2,12 @@ import { Text, View, TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router, useFocusEffect } from "expo-router";
 import { useState, useMemo } from "react";
-import { getUserInfo, getEventInfo } from "@/utils/requests";
+import { getUserInfo, getEventInfo, getPatrolInfo } from "@/utils/requests";
 import { getSessionInfo } from "@/utils/session";
 import CustomButton from "@/comp/CustomButton"
 import GradeBox from "@/comp/GradeBox"
 
-export default function Individual() {
+export default function Patrol() {
   useFocusEffect(() => {
     const a = async () => {
       const sessionInfo = await getSessionInfo();
@@ -21,6 +21,12 @@ export default function Individual() {
         return;
       }
       setUserInfo(userInfoTmp);
+      const patrolInfoTmp: any = await getPatrolInfo(userInfoTmp.patrolId);
+      if (!patrolInfoTmp) {
+        router.replace('/');
+        return;
+      }
+      setPatrolInfo(patrolInfoTmp);
       const eventInfoTmp: any = await getEventInfo(userInfoTmp.eventId);
       if (!eventInfoTmp) {
         router.replace('/');
@@ -30,16 +36,16 @@ export default function Individual() {
       const tasksTmp: any = [];
       eventInfoTmp.tasks.forEach((task: any) => {
         const taskTemplate = eventInfoTmp.taskTemplates.find((template:any) => { return template.id == task.taskTemplateId });
-        if (!taskTemplate?.individual || new Date(task.date) > new Date()) {
+        if (taskTemplate?.individual || new Date(task.date) > new Date()) {
           return;
         }
-        const userScore = userInfoTmp.scores.find((score: any) => { return score.taskId == task.id });
+        const patrolScore = patrolInfoTmp.scores.find((score: any) => { return score.taskId == task.id });
         tasksTmp.push({
-          userScoreId: userScore?.id ?? -1,
+          patrolScoreId: patrolScore?.id ?? -1,
           taskId: task.id,
           taskTemplateId: taskTemplate.id,
           title: taskTemplate.title,
-          score: userScore?.score ?? 0,
+          score: patrolScore?.score ?? 0,
           maxPoints: taskTemplate.maxPoints,
           date: task.date
         });
@@ -59,6 +65,7 @@ export default function Individual() {
   
   const [userInfo, setUserInfo] = useState<any>();
   const [eventInfo, setEventInfo] = useState<any>();
+  const [patrolInfo, setPatrolInfo] = useState<any>();
   const [tasks, setTasks] = useState<any>([]);
   
   return (

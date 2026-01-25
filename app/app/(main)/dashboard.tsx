@@ -63,7 +63,7 @@ export default function Dashboard() {
       </View>
       <View className="flex-1 flex-col items-center gap-6">
         <CustomButton text="Moje punkty" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/scores/individual')} />
-        <CustomButton text="Punkty mojego zastępu" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" />
+        <CustomButton text="Punkty mojego zastępu" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/scores/patrol')} />
         <CustomButton text="Statystyki" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" />
       </View>
     </SafeAreaView>

@@ -16,5 +16,12 @@ export default function MainLayout() {
         title: 'Moje punkty',
       }}
     />
+    <Drawer.Screen
+      name="scores/patrol"
+      options={{
+        drawerLabel: 'Punkty zastępu',
+        title: 'Punkty zastępu',
+      }}
+    />
   </Drawer>
 }
