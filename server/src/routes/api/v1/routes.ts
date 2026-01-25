@@ -3,6 +3,7 @@ import addAdminRoute from './admin/routes';
 import addInfoRoute from './info/routes';
 import addAccountRoute from './account/routes';
 import addScoresRoute from './scores/routes';
+import addStatsRoute from './stats/routes';
 import postRegister from './register'
 import postLogin from './login';
 import postVerifySecretCode from './verifySecretCode';
@@ -13,6 +14,7 @@ export default function addV1Route(app: express.Application) {
     addInfoRoute(app);
     addAccountRoute(app);
     addScoresRoute(app);
+    addStatsRoute(app);
     postVerifySecretCode(app);
     postVerifySession(app);
     postRegister(app);
