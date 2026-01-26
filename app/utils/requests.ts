@@ -69,3 +69,95 @@ export async function getPatrolInfo(patrolId: number): Promise<JSON | undefined>
 
   return await req.json();
 }
+
+export async function getTroopInfo(troopId: number): Promise<JSON | undefined> {
+  const sessionInfo = await getSessionInfo();
+
+  if (!sessionInfo) {
+    return undefined;
+  }
+
+  const req = await fetch(process.env.EXPO_PUBLIC_API_URL + "/api/v1/info/troop/" + troopId.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: sessionInfo.userId,
+      sessionInfo: sessionInfo.sessionSecret
+    }),
+  });
+
+  if (!req.ok) {
+    return undefined;
+  }
+
+  return await req.json();
+}
+
+export async function getGlobalStats(): Promise<Array<JSON> | undefined> {
+  const sessionInfo = await getSessionInfo();
+
+  if (!sessionInfo) {
+    return undefined;
+  }
+
+  const req = await fetch(process.env.EXPO_PUBLIC_API_URL + "/api/v1/stats/global", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: sessionInfo.userId,
+      sessionInfo: sessionInfo.sessionSecret
+    }),
+  });
+
+  if (!req.ok) {
+    return undefined;
+  }
+
+  return await req.json();
+}
+
+export async function getPatrolsStats(): Promise<Array<JSON> | undefined> {
+  const sessionInfo = await getSessionInfo();
+
+  if (!sessionInfo) {
+    return undefined;
+  }
+
+  const req = await fetch(process.env.EXPO_PUBLIC_API_URL + "/api/v1/stats/patrols", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: sessionInfo.userId,
+      sessionInfo: sessionInfo.sessionSecret
+    }),
+  });
+
+  if (!req.ok) {
+    return undefined;
+  }
+
+  return await req.json();
+}
+
+export async function getInPatrolStats(patrolId: number): Promise<Array<JSON> | undefined> {
+  const sessionInfo = await getSessionInfo();
+
+  if (!sessionInfo) {
+    return undefined;
+  }
+
+  const req = await fetch(process.env.EXPO_PUBLIC_API_URL + "/api/v1/stats/inPatrol/" + patrolId.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: sessionInfo.userId,
+      sessionInfo: sessionInfo.sessionSecret
+    }),
+  });
+
+  if (!req.ok) {
+    return undefined;
+  }
+
+  return await req.json();
+}
