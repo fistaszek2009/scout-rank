@@ -55,6 +55,6 @@ export function useFormValidation(
     validateAll,
     setApiError,
     clearApiError,
-    setErrors,
+    setErrors
   };
 }
