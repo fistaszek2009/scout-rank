@@ -184,3 +184,26 @@ export async function deleteTaskTemplate(taskTemplateId: number): Promise<string
 
   return await req.text();
 }
+
+export async function deletePatrol(patrolId: number): Promise<string | undefined> {
+  const sessionInfo = await getSessionInfo();
+
+  if (!sessionInfo) {
+    return undefined;
+  }
+
+  const req = await fetch(process.env.EXPO_PUBLIC_API_URL + "/api/v1/admin/deletePatrol/" + patrolId.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: sessionInfo.userId,
+      sessionInfo: sessionInfo.sessionSecret
+    }),
+  });
+
+  if (!req.ok) {
+    return undefined;
+  }
+
+  return await req.text();
+}

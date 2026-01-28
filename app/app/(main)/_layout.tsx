@@ -71,5 +71,13 @@ export default function MainLayout() {
         drawerItemStyle: {display: (isAdmin ? 'flex' : 'none')}
       }}
     />
+    <Drawer.Screen
+      name="admin/patrols"
+      options={{
+        drawerLabel: 'Zastępy',
+        title: 'Zastępy',
+        drawerItemStyle: {display: (isAdmin ? 'flex' : 'none')}
+      }}
+    />
   </Drawer>
 }
