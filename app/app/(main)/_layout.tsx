@@ -87,5 +87,12 @@ export default function MainLayout() {
         drawerItemStyle: {display: (isAdmin ? 'flex' : 'none')}
       }}
     />
+    <Drawer.Screen
+      name="account"
+      options={{
+        drawerLabel: 'Konto',
+        title: 'Konto'
+      }}
+    />
   </Drawer>
 }

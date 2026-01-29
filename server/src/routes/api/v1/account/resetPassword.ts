@@ -56,7 +56,7 @@ export default function postResetPassword(app: express.Application) {
                     return;
                 }
 
-                prisma.user.update({ where: { id: target.id }, data: { passwordHash: hashPassword(newPassword) } });
+                await prisma.user.update({ where: { id: target.id }, data: { passwordHash: hashPassword(newPassword) } });
 
                 res.sendStatus(200);
                 return;
