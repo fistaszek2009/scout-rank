@@ -65,8 +65,8 @@ export default function AddTaskTemplate() {
     setIsSubmitting(true);
 
     try {
-      const register_url = process.env.EXPO_PUBLIC_API_URL + "/api/v1/admin/createTaskTemplate";
-      const register_response = await fetch(register_url, {
+      const url = process.env.EXPO_PUBLIC_API_URL + "/api/v1/admin/createTaskTemplate";
+      const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -80,8 +80,8 @@ export default function AddTaskTemplate() {
         }),
       });
 
-      if (!register_response.ok) {
-        const data = await register_response.text();
+      if (!response.ok) {
+        const data = await response.text();
         const errorMessage = typeof data === "string" ? data : "Wystąpił błąd przy próbie utworzenia schematu zadania";
         setApiError(errorMessage);
         return;

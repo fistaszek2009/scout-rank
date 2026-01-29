@@ -58,8 +58,8 @@ export default function AddPatrol() {
     setIsSubmitting(true);
 
     try {
-      const register_url = process.env.EXPO_PUBLIC_API_URL + "/api/v1/admin/createPatrol";
-      const register_response = await fetch(register_url, {
+      const url = process.env.EXPO_PUBLIC_API_URL + "/api/v1/admin/createPatrol";
+      const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -69,8 +69,8 @@ export default function AddPatrol() {
         }),
       });
 
-      if (!register_response.ok) {
-        const data = await register_response.text();
+      if (!response.ok) {
+        const data = await response.text();
         const errorMessage = typeof data === "string" ? data : "Wystąpił błąd przy próbie utworzenia zastępu";
         setApiError(errorMessage);
         return;

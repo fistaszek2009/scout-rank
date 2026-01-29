@@ -5,6 +5,7 @@ import postTroop from './troop';
 import postEvent from './event';
 import postTaskTemplate from './taskTemplate';
 import postTask from './task';
+import postAllUsers from './allUsers';
 
 export default function addInfoRoute(app: express.Application) {
     postUser(app);
@@ -13,5 +14,6 @@ export default function addInfoRoute(app: express.Application) {
     postEvent(app);
     postTaskTemplate(app);
     postTask(app);
+    postAllUsers(app);
     return app;
 }
