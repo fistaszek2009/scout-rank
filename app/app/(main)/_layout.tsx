@@ -12,7 +12,7 @@ export default function MainLayout() {
       return;
     }
     const userInfoTmp: any = await getUserInfo(sessionInfo.userId)
-    if (!userInfoTmp || !(userInfoTmp.leaderOfTroopId || userInfoTmp.assistantOfTroopId)) {
+    if (!userInfoTmp) {
       router.replace('/');
       return;
     }
