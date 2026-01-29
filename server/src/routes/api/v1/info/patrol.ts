@@ -65,7 +65,12 @@ export default function postPatrol(app: express.Application) {
                 name: patrol.name,
                 patrolLeaderId: patrolLeader?.id,
                 troopId: patrol.troopId,
-                membersIds: members.map((member) => member.id),
+                members: members.map((member) => {
+                    return {
+                       id: member.id,
+                       firstName: member.firstName
+                    }
+                }),
                 scores: patrolTaskScores.map((patrolTaskScore) => {
                     return {
                         id: patrolTaskScore.id,

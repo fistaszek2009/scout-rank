@@ -27,6 +27,7 @@ export default function MainLayout() {
   const [userInfo, setUserInfo] = useState<any>();
   const [loaded, setLoaded] = useState(false);
   const isAdmin = useMemo(() => (userInfo && (userInfo.leaderOfTroopId || userInfo.assistantOfTroopId)), [userInfo]);
+  const isPatrolLeader = useMemo(() => (userInfo && userInfo.leaderOfPatrolId), [userInfo]);
   
   if (!loaded) {
     return null;
@@ -61,6 +62,14 @@ export default function MainLayout() {
       options={{
         drawerLabel: 'Statystyki',
         title: 'Statystyki'
+      }}
+    />
+    <Drawer.Screen
+      name="scoresEdit"
+      options={{
+        drawerLabel: 'Oceny',
+        title: 'Oceny',
+        drawerItemStyle: {display: (isAdmin || isPatrolLeader ? 'flex' : 'none')}
       }}
     />
     <Drawer.Screen

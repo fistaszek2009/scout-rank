@@ -300,3 +300,55 @@ export async function changePassword(userId: number, newPassword: string): Promi
 
   return await req.text();
 }
+
+export async function changePatrolScore(patrolId: number, taskId: number, newScore: number): Promise<string | undefined> {
+  const sessionInfo = await getSessionInfo();
+
+  if (!sessionInfo) {
+    return undefined;
+  }
+
+  const req = await fetch(process.env.EXPO_PUBLIC_API_URL + "/api/v1/scores/setPatrolScore/" + patrolId.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      score: newScore,
+      timestamp: new Date(),
+      taskId: taskId,
+      userId: sessionInfo.userId,
+      sessionInfo: sessionInfo.sessionSecret
+    }),
+  });
+
+  if (!req.ok) {
+    return undefined;
+  }
+
+  return await req.text();
+}
+
+export async function changeUserScore(userId: number, taskId: number, newScore: number): Promise<string | undefined> {
+  const sessionInfo = await getSessionInfo();
+
+  if (!sessionInfo) {
+    return undefined;
+  }
+
+  const req = await fetch(process.env.EXPO_PUBLIC_API_URL + "/api/v1/scores/setUserScore/" + userId.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      score: newScore,
+      timestamp: new Date(),
+      taskId: taskId,
+      userId: sessionInfo.userId,
+      sessionInfo: sessionInfo.sessionSecret
+    }),
+  });
+
+  if (!req.ok) {
+    return undefined;
+  }
+
+  return await req.text();
+}
