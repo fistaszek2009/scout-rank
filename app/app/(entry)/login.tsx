@@ -156,7 +156,7 @@ export default function Login() {
 
               <View className="flex-row justify-center gap-4">
                 <CustomButton
-                  onPress={() => { router.replace('/(entry)/register/key') }}
+                  onPress={() => { router.push('/(entry)/register/key') }}
                   className="px-4 py-2 rounded"
                   textClassName="text-slate-700 underline"
                   text="Zarejestruj się"

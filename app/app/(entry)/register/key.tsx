@@ -87,7 +87,7 @@ export default function RegisterKey() {
 
           <View className="flex-row justify-center gap-4">
             <CustomButton
-              onPress={() => { router.replace('/(entry)/login') }}
+              onPress={() => { router.back() }}
               className="px-4 py-2 rounded"
               textClassName="text-slate-700 underline"
               text="Zaloguj się"
