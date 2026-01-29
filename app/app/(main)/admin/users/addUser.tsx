@@ -115,7 +115,7 @@ export default function AddUser() {
     <SafeAreaView className="flex-1 bg-slate-400 flex-col items-center gap-5">
       <View className="w-full max-w-lg gap-4 mt-3">
         <Text className="text-4xl font-bold text-slate-700 text-center">
-            Dodaj schemat zadania
+            Dodaj użytkownika
         </Text>
         <View className="gap-3">
           <View className={`overflow-hidden ${errors.api ? "h-auto" : "h-0"}`}>
@@ -157,7 +157,7 @@ export default function AddUser() {
           </View>
 
           <View>
-            <Text className="mb-1 text-sm text-slate-700">Czy jest asystentem drużynowego:</Text>
+            <Text className="mb-1 text-sm text-slate-700">Czy jest przybocznym:</Text>
             <Checkbox value={isAssistant} onValueChange={setIsAssistant} />
           </View>
 
