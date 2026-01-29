@@ -31,14 +31,17 @@ export default function Account() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-400 flex-col items-center gap-20">
-      <View className="flex mt-5 items-center gap-4">
+      <View className="flex mt-5 items-center gap-6">
         <Text className="text-4xl font-bold text-slate-800">Konto</Text>
-        <View>
-            <TextInput placeholder="nowe_haslo" onChangeText={setNewPassword} value={newPassword} />
-            <CustomButton text="Zmień hasło" onPress={() => { changePassword(userInfo.id, newPassword); setNewPassword("") }} />
+        <View className="items-center gap-3">
+            <Text className="text-xl font-bold text-slate-800 w-full">Zmiana hasła</Text>
+            <TextInput placeholder="Nowe hasło" className="bg-white p-3 rounded border-2 border-white" onChangeText={setNewPassword} value={newPassword} />
+            <CustomButton text="Zmień hasło" className="bg-slate-700 px-4 py-2 rounded " textClassName="text-white text-center" onPress={() => { changePassword(userInfo.id, newPassword); setNewPassword("") }} />
         </View>
-        <View>
-            <CustomButton text="Wyloguj" onPress={() => { clearSessionInfo(); router.replace("/") }} />
+        
+        <View className="items-center gap-3 w-full">
+            <Text className="text-xl font-bold text-slate-800 w-full">Wylogowanie</Text>
+            <CustomButton text="Wyloguj" className="bg-slate-700 px-4 py-2 rounded" textClassName="text-white" onPress={() => { clearSessionInfo(); router.replace("/") }} />
         </View>
       </View>
     </SafeAreaView>
