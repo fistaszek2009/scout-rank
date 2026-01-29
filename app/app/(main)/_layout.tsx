@@ -72,6 +72,14 @@ export default function MainLayout() {
       }}
     />
     <Drawer.Screen
+      name="admin/tasks"
+      options={{
+        drawerLabel: 'Zadania',
+        title: 'Zadania',
+        drawerItemStyle: {display: (isAdmin ? 'flex' : 'none')}
+      }}
+    />
+    <Drawer.Screen
       name="admin/patrols"
       options={{
         drawerLabel: 'Zastępy',

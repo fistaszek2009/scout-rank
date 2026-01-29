@@ -42,7 +42,8 @@ export default function Individual() {
             title: taskTemplate.title,
             score: userScore?.score ?? 0,
             maxPoints: taskTemplate.maxPoints,
-            date: task.date
+            date: task.date,
+            optional: taskTemplate.optional
           });
         });
         tasksTmp.sort((x: any, y: any) => { 

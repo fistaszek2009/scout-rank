@@ -253,6 +253,29 @@ export async function deleteUser(userId: number): Promise<string | undefined> {
   return await req.text();
 }
 
+export async function deleteTask(taskId: number): Promise<string | undefined> {
+  const sessionInfo = await getSessionInfo();
+
+  if (!sessionInfo) {
+    return undefined;
+  }
+
+  const req = await fetch(process.env.EXPO_PUBLIC_API_URL + "/api/v1/admin/deleteTask/" + taskId.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: sessionInfo.userId,
+      sessionInfo: sessionInfo.sessionSecret
+    }),
+  });
+
+  if (!req.ok) {
+    return undefined;
+  }
+
+  return await req.text();
+}
+
 export async function changePassword(userId: number, newPassword: string): Promise<string | undefined> {
   const sessionInfo = await getSessionInfo();
 
