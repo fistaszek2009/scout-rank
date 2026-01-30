@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: .
+    ports:
+      - 3000:3000
+    networks:
+      - backend
+    depends_on:
+      database:
+        condition: service_healthy
+        restart: true
+  database:
+    image: 'postgres:18-alpine'
+    environment:
+      POSTGRES_USER: scoutrank
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: scoutrank
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      retries: 15
+      start_period: 30s
+      timeout: 5s
+
+networks:
+  backend:
+    driver: bridge
