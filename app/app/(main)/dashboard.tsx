@@ -41,6 +41,8 @@ export default function Dashboard() {
   const [eventInfo, setEventInfo] = useState<any>();
   const [userPoints, setUserPoints] = useState<number>(0);
   const [maxPoints, setMaxPoints] = useState<number>(0);
+  const isAdmin = useMemo(() => (userInfo && (userInfo.leaderOfTroopId || userInfo.assistantOfTroopId)), [userInfo]);
+
   const percentagePoints = useMemo(() => {
     if (maxPoints == 0) {
       return 100;
@@ -54,20 +56,28 @@ export default function Dashboard() {
         {userInfo && <Text className="text-6xl font-bold text-slate-800">Witaj {userInfo.firstName}!</Text>}
         {eventInfo && 
           <View className="flex items-center gap-1">
-            <Text className="text-xl font-bold text-slate-700">Wydarzenie: {eventInfo.name}</Text>
+            <Text className="text-xl font-bold text-slate-700">Wydarzenie: {eventInfo.name} ({eventInfo.id})</Text>
             <Text className="text-xl font-bold text-slate-700">{eventInfo.startDate.split('T')[0].replaceAll('-', '.')} - {eventInfo.endDate.split('T')[0].replaceAll('-', '.')}</Text>
           </View>
         }
       </View>
-      <View className="bg-slate-700 rounded-3xl p-10 gap-5 items-center min-w-64">
-        <Text className="text-7xl text-slate-200">{userPoints}/{maxPoints}</Text>
-        <Text className="text-5xl text-slate-200">{percentagePoints}%</Text>
-      </View>
-      <View className="flex-1 flex-col items-center gap-6">
-        <CustomButton text="Moje punkty" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/scores/individual')} />
-        <CustomButton text="Punkty mojego zastępu" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/scores/patrol')} />
-        <CustomButton text="Statystyki" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/stats')} />
-      </View>
+      {!isAdmin && <View className="flex-1 bg-slate-400 flex-col items-center gap-20">
+        <View className="bg-slate-700 rounded-3xl p-10 gap-5 items-center min-w-64">
+          <Text className="text-7xl text-slate-200">{userPoints}/{maxPoints}</Text>
+          <Text className="text-5xl text-slate-200">{percentagePoints}%</Text>
+        </View>
+        <View className="flex-1 flex-col items-center gap-6">
+          <CustomButton text="Moje punkty" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/scores/individual')} />
+          <CustomButton text="Punkty mojego zastępu" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/scores/patrol')} />
+          <CustomButton text="Statystyki" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/stats')} />
+        </View>
+      </View>}
+      {isAdmin && <View className="flex-1 bg-slate-400 flex-col items-center gap-20">
+        <View className="flex-1 flex-col items-center gap-6">
+          <CustomButton text="Oceny" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/scoresEdit/patrols')} />
+          <CustomButton text="Statystyki" className="w-96 items-center py-5 px-10 bg-slate-600 rounded-2xl" textClassName="text-2xl text-slate-200" onPress={() => router.push('/(main)/stats')} />
+        </View>
+      </View>}
     </SafeAreaView>
   );
 }
